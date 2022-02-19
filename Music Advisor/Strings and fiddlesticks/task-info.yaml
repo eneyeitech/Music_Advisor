@@ -123,6 +123,12 @@ files:
         }
     }
   learner_created: false
+- name: src/advisor/presentation/MusicAdvisor.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/62/stages/335/implement#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Sat, 19 Feb 2022 17:59:13 UTC
 record: -1

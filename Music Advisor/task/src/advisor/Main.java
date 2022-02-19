@@ -1,7 +1,10 @@
 package advisor;
 
+import advisor.presentation.MusicAdvisor;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        MusicAdvisor musicAdvisor = new MusicAdvisor();
+        musicAdvisor.run();
     }
 }
