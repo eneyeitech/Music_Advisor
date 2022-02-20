@@ -2,7 +2,19 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="17">
+      <module name="Music_Advisor.Music_Advisor-task-build-classes-java.main" target="11" />
+      <module name="Music_Advisor.Music_Advisor-task-build-generated-sources-annotationProcessor-java.main" target="11" />
+      <module name="Music_Advisor.Music_Advisor-task-build-generated-sources-headers-java.main" target="11" />
+      <module name="Music_Advisor.Music_Advisor-task-build-reports-tests.main" target="11" />
+      <module name="Music_Advisor.Music_Advisor-task-build-test-results.main" target="11" />
+      <module name="Music_Advisor.Music_Advisor-task-build-tmp.main" target="11" />
       <module name="Music_Advisor.Music_Advisor-task.main" target="11" />
+      <module name="Music_Advisor.Topics-Decorator-Advantages.main" target="11" />
+      <module name="Music_Advisor.Topics-Decorator-Breakfast_Decorator.main" target="11" />
+      <module name="Music_Advisor.Topics-Decorator-Coffee_Decorator.main" target="11" />
+      <module name="Music_Advisor.Topics-Decorator-Pizza_Decorator.main" target="11" />
+      <module name="Music_Advisor.Topics-Decorator-Theory.main" target="11" />
+      <module name="Music_Advisor.Topics-Decorator-What_does_the_code_print.main" target="11" />
       <module name="Music_Advisor.util.main" target="11" />
     </bytecodeTargetLevel>
   </component>
