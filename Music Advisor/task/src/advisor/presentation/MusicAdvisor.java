@@ -1,17 +1,25 @@
 package advisor.presentation;
 
+import advisor.Server;
+
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Scanner;
 
 public class MusicAdvisor {
     private final Scanner scanner;
+    private final String spotifyAccessServer;
+    private final Server server;
     private boolean accessGranted = false;
     private final String CLIENT_ID = "b68e796f69654238a1631d9a19c67898";
     private final String CLIENT_SECRET = "4868231c3e094fc5b83fe6738040c85a";
     private final String REDIRECT_URI = "http://localhost:8080";
 
-    public MusicAdvisor() {
+    public MusicAdvisor(String spotifyAccessServer) {
         scanner = new Scanner(System.in);
+        this.spotifyAccessServer = spotifyAccessServer;
+        server = new Server(this, spotifyAccessServer);
+
     }
 
     public void run() {
@@ -88,9 +96,27 @@ public class MusicAdvisor {
     }
 
     public void auth(String authUri){
-        System.out.println(authUri);
-        accessGranted = true;
-        System.out.println("---SUCCESS---");
+        //startServer();
+        //System.out.println("use this link to request the access code:");
+        //System.out.println(authUri);
+        start();
+    }
+
+    public void setAccessGranted(boolean accessGranted) {
+        this.accessGranted = accessGranted;
+    }
+
+    public void startServer() {
+        try {
+            server.createServer(spotifyAccessServer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void start() {
+        server.getAccessCode();
+        server.getAccessToken2();
     }
 
 
