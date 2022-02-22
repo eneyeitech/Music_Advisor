@@ -897,6 +897,388 @@ files:
         }
     }
   learner_created: false
+- name: src/advisor/presentation/MusicAdvisor.java
+  visible: true
+  text: |
+    package advisor.presentation;
+
+    import advisor.Server;
+
+    import java.io.IOException;
+    import java.util.Locale;
+    import java.util.Scanner;
+
+    public class MusicAdvisor {
+        private final Scanner scanner;
+        private final String spotifyAccessServer;
+        private final Server server;
+        private boolean accessGranted = false;
+        private final String CLIENT_ID = "b68e796f69654238a1631d9a19c67898";
+        private final String CLIENT_SECRET = "4868231c3e094fc5b83fe6738040c85a";
+        private final String REDIRECT_URI = "http://localhost:8080";
+
+        public MusicAdvisor(String spotifyAccessServer) {
+            scanner = new Scanner(System.in);
+            this.spotifyAccessServer = spotifyAccessServer;
+            server = new Server(this, spotifyAccessServer);
+
+        }
+
+        public void run() {
+            while (true) {
+                userPrompt();
+            }
+        }
+
+        public void userPrompt() {
+            String input = scanner.next();
+            choices(input);
+
+        }
+
+        public void choices(String s) {
+            switch (s.toLowerCase()) {
+                case "featured":
+                    featured();
+                    break;
+                case "new":
+                    newSelected();
+                    break;
+                case "categories":
+                    categories();
+                    break;
+                case "playlists":
+                    String category = scanner.next();
+                    playlist(category);
+                    break;
+                case "auth":
+                    //String auth = scanner.next();
+                    String auth = String.format("https://accounts.spotify.com/authorize?client_id=%s&redirect_uri=%s&response_type=code", CLIENT_ID, REDIRECT_URI);
+                    auth(auth);
+                    break;
+                case "exit":
+                    System.out.println("---GOODBYE!---");
+                    System.exit(0);
+                    break;
+            }
+        }
+
+        public void featured() {
+            if (!accessGranted){
+                System.out.println("Please, provide access for application.");
+                return;
+            }
+            System.out.println("---FEATURED---");
+            System.out.println("Wake Up and Smell the Coffee");
+        }
+        public void newSelected() {
+            if (!accessGranted){
+                System.out.println("Please, provide access for application.");
+                return;
+            }
+            System.out.println("---NEW RELEASES---");
+            System.out.println("Mountains [Sia, Diplo, Labrinth]");
+        }
+        public void categories() {
+            if (!accessGranted){
+                System.out.println("Please, provide access for application.");
+                return;
+            }
+            System.out.println("---CATEGORIES---");
+            System.out.println("Mood");
+            System.out.println("Pop");
+        }
+        public void playlist(String cat) {
+            if (!accessGranted){
+                System.out.println("Please, provide access for application.");
+                return;
+            }
+            System.out.printf("---%s PLAYLISTS---\n", cat.toUpperCase(Locale.ROOT));
+            System.out.println("Mood");
+        }
+
+        public void auth(String authUri){
+            //startServer();
+            //System.out.println("use this link to request the access code:");
+            //System.out.println(authUri);
+            start();
+        }
+
+        public void setAccessGranted(boolean accessGranted) {
+            this.accessGranted = accessGranted;
+        }
+
+        public void startServer() {
+            try {
+                server.createServer(spotifyAccessServer);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void start() {
+            server.getAccessCode();
+            server.getAccessToken2();
+        }
+
+
+    }
+  learner_created: true
+- name: src/advisor/Server.java
+  visible: true
+  text: |
+    package advisor;
+
+    import advisor.presentation.MusicAdvisor;
+    import com.sun.net.httpserver.HttpExchange;
+    import com.sun.net.httpserver.HttpHandler;
+    import com.sun.net.httpserver.HttpServer;
+
+    import java.io.IOException;
+    import java.net.InetSocketAddress;
+    import java.net.URI;
+    import java.net.http.HttpClient;
+    import java.net.http.HttpHeaders;
+    import java.net.http.HttpRequest;
+    import java.net.http.HttpResponse;
+    import java.nio.charset.StandardCharsets;
+    import java.util.Base64;
+
+    public class Server {
+        private final String API = "https://accounts.spotify.com/api/token";
+        private String code;
+        private String spotifyAccessServer;
+        private final String CLIENT_ID = "b68e796f69654238a1631d9a19c67898";
+        private final String CLIENT_SECRET = "4868231c3e094fc5b83fe6738040c85a";
+        private final MusicAdvisor musicAdvisor;
+        public String ACCESS_TOKEN = "";
+        public String ACCESS_CODE = "";
+        public String SERVER_PATH = "https://accounts.spotify.com";
+        public String REDIRECT_URI = "http://localhost:8080";
+
+        public Server(MusicAdvisor musicAdvisor, String sp) {
+            this.musicAdvisor = musicAdvisor;
+            SERVER_PATH = sp;
+        }
+
+        public void createServer(String spotifyAccessServer) throws IOException {
+            this.spotifyAccessServer = spotifyAccessServer;
+            HttpServer server = HttpServer.create();
+            server.bind(new InetSocketAddress(8080), 0);
+
+            server.createContext("/",
+                    new HttpHandler() {
+                        public void handle(HttpExchange exchange) throws IOException {
+
+
+                            String query = exchange.getRequestURI().getQuery();
+                            //System.out.println(query);
+                            System.out.println("waiting for code...");
+                            if (query != null) {
+                                String[] entry = query.split("=");
+                                if (entry.length > 1) {
+                                    if (entry[0].equalsIgnoreCase("code")) {
+                                        code = entry[1];
+                                        //System.out.println(code);
+                                        //System.out.println("Got the code. Return back to your program.");
+                                        String hello = "Got the code. Return back to your program.";
+                                        exchange.sendResponseHeaders(200, hello.length());
+                                        exchange.getResponseBody().write(hello.getBytes());
+                                        exchange.getResponseBody().close();
+                                        System.out.println("code received");
+                                        //server.stop(1);
+                                        try {
+                                            System.out.println("making http request for access_token...");
+                                            System.out.println("response:");
+                                            getAccessToken();
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                    } else {
+                                        String hello = "Authorization code not found. Try again.";
+                                        exchange.sendResponseHeaders(200, hello.length());
+                                        exchange.getResponseBody().write(hello.getBytes());
+                                        exchange.getResponseBody().close();
+                                        //System.out.println("Authorization code not found. Try again.");
+                                    }
+                                }else{
+                                    String hello = "Authorization code not found. Try again.";
+                                    exchange.sendResponseHeaders(200, hello.length());
+                                    exchange.getResponseBody().write(hello.getBytes());
+                                    exchange.getResponseBody().close();
+                                    //System.out.println("Authorization code not found. Try again.");
+                                }
+                            }
+
+                        }
+                    }
+            );
+
+            server.start();
+            //server.stop(1);
+        }
+
+        public boolean getAccessToken() throws IOException, InterruptedException {
+            HttpClient client = HttpClient.newBuilder().build();
+            String redirectURI = "http://localhost:8080";
+            String grantType = "authorization_code";
+
+            String auth = CLIENT_ID + ":" + CLIENT_SECRET;
+            byte[] encodedAuth = Base64.getEncoder().encode(
+                    auth.getBytes(StandardCharsets.ISO_8859_1));
+            String authHeader = "Basic " + new String(encodedAuth);
+
+            String parameter = String.format("" +
+                    "code=%s&" +
+                    "redirect_uri=%s&" +
+                    "grant_type=%s", code, redirectURI, grantType);
+
+            // application/json
+            HttpRequest request = HttpRequest.newBuilder()
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .setHeader("Authorization", authHeader)
+                    .uri(URI.create(spotifyAccessServer + "/api/token"))
+                    .POST(HttpRequest.BodyPublishers.ofString(parameter))
+                    .build();
+
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode()==200) {
+                System.out.println(response.body());
+                musicAdvisor.setAccessGranted(true);
+                System.out.println("---SUCCESS---");
+                return true;
+            } else {
+                System.out.println("error");
+                return false;
+            }
+
+
+
+        }
+
+        /**
+         * Getting access_code
+         */
+        public void getAccessCode() {
+            //Creating a line to go to in the browser
+            String uri = SERVER_PATH + "/authorize"
+                    + "?client_id=" + CLIENT_ID
+                    + "&redirect_uri=" + REDIRECT_URI
+                    + "&response_type=code";
+            System.out.println("use this link to request the access code:");
+            System.out.println(uri);
+
+            //Creating a server and listening to the request.
+            try {
+                HttpServer server = HttpServer.create();
+                server.bind(new InetSocketAddress(8080), 0);
+                server.start();
+                server.createContext("/",
+                        new HttpHandler() {
+                            public void handle(HttpExchange exchange) throws IOException {
+                                String query = exchange.getRequestURI().getQuery();
+                                String request;
+                                if (query != null && query.contains("code")) {
+                                    ACCESS_CODE = query.substring(5);
+                                    System.out.println("code received");
+                                    System.out.println(ACCESS_CODE);
+                                    request = "Got the code. Return back to your program.";
+                                } else {
+                                    request = "Authorization code not found. Try again.";
+                                }
+                                exchange.sendResponseHeaders(200, request.length());
+                                exchange.getResponseBody().write(request.getBytes());
+                                exchange.getResponseBody().close();
+                            }
+                        });
+
+                System.out.println("waiting for code...");
+                while (ACCESS_CODE.length() == 0) {
+                    Thread.sleep(100);
+                }
+                server.stop(5);
+
+            } catch (IOException | InterruptedException e) {
+                System.out.println("Server error");
+            }
+        }
+
+        /**
+         * Getting access_token based on access_code
+         */
+        public void getAccessToken2() {
+
+            System.out.println("making http request for access_token...");
+            System.out.println("response:");
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .uri(URI.create(SERVER_PATH + "/api/token"))
+                    .POST(HttpRequest.BodyPublishers.ofString(
+                            "grant_type=authorization_code"
+                                    + "&code=" + ACCESS_CODE
+                                    + "&client_id=" + CLIENT_ID
+                                    + "&client_secret=" + CLIENT_SECRET
+                                    + "&redirect_uri=" + REDIRECT_URI))
+                    .build();
+
+            try {
+
+                HttpClient client = HttpClient.newBuilder().build();
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+                assert response != null;
+                if (response.statusCode()==200) {
+                    musicAdvisor.setAccessGranted(true);
+                    System.out.println(response.body());
+                    System.out.println("---SUCCESS---");
+                } else {
+                    System.out.println("error");
+                }
+
+
+            } catch (InterruptedException | IOException e) {
+                System.out.println("Error response");
+            }
+        }
+    }
+  learner_created: true
+- name: src/advisor/Client.java
+  visible: true
+  text: |
+    package advisor;
+
+    import java.io.IOException;
+    import java.net.URI;
+    import java.net.http.HttpClient;
+    import java.net.http.HttpRequest;
+    import java.net.http.HttpResponse;
+
+    public class Client {
+        public void createClient() throws IOException, InterruptedException {
+            HttpClient client = HttpClient.newBuilder().build();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8080"))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            System.out.println(response.body());
+
+            // application/json
+            request = HttpRequest.newBuilder()
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .uri(URI.create("http://localhost:8080"))
+                    .POST(HttpRequest.BodyPublishers.ofString("login=admin&password=admin"))
+                    .build();
+        }
+    }
+  learner_created: true
 - name: test/TempWebServerMock.java
   visible: false
   text: |
@@ -1031,6 +1413,41 @@ files:
         }
     }
   learner_created: false
+- name: src/advisor/business/MusicAdvisorService.java
+  visible: true
+  learner_created: true
+- name: src/advisor/business/Info.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/5480#comment
-status: Unchecked
+status: Failed
+feedback:
+  message: |-
+    Wrong answer in test #8
+
+    There are no playlists in correct format on &quot;playlists {name}&quot; action. Make sure you correctly parsed the category name.
+
+    Please find below the output of your program during this failed test.
+    Note that the &#39;&gt;&#39; character indicates the beginning of the input line.
+
+    ---
+
+    Arguments: -access http://127.0.0.1:45678 -resource http://127.0.0.1:56789
+
+    http://127.0.0.1:45678
+    http://127.0.0.1:56789
+    &gt; auth
+    use this link to request the access code:
+    http://127.0.0.1:45678/authorize?client_id=b68e796f69654238a1631d9a19c67898&amp;redirect_uri=http://localhost:8080&amp;response_type=code
+    waiting for code...
+    Tester: making requests to redirect uri: http://localhost:8080
+    Tester: done request 1: Authorization code not found. Try again.
+    Tester: done request 2: Authorization code not found. Try again.
+    code received
+    Tester: done request 3: Got the code. Return back to your program.
+    making http request for access_token...
+    Success!
+    &gt; playlists Party Time
+    Unknown category name.
+  time: Tue, 22 Feb 2022 17:13:36 UTC
 record: -1

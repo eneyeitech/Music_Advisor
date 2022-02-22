@@ -9,18 +9,29 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        String search = "-access";
+        String search1 = "-access";
+        String search2 = "-resource";
         String spotifyAccessServer = "";
+
         List<String> arguments = new ArrayList<>(Arrays.asList(args));
-        if (arguments.contains(search)) {
-            spotifyAccessServer = args[arguments.indexOf(search) + 1];
+        if (arguments.contains(search1)) {
+            spotifyAccessServer = args[arguments.indexOf(search1) + 1];
         } else {
             spotifyAccessServer = "https://accounts.spotify.com";
         }
-
-        MusicAdvisor musicAdvisor = new MusicAdvisor(spotifyAccessServer);
+        String spotifyResourceServer = "";
+        if (arguments.contains(search2)) {
+            spotifyResourceServer = args[arguments.indexOf(search2) + 1];
+        } else {
+            spotifyResourceServer = "https://api.spotify.com";
+        }
+System.out.println(spotifyAccessServer);
+        System.out.println(spotifyResourceServer);
+        MusicAdvisor musicAdvisor = new MusicAdvisor(spotifyAccessServer, spotifyResourceServer);
         musicAdvisor.run();
 
 
     }
 }
+
+

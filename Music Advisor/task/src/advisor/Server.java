@@ -1,6 +1,8 @@
 package advisor;
 
 import advisor.presentation.MusicAdvisor;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -60,7 +62,7 @@ public class Server {
                                     //server.stop(1);
                                     try {
                                         System.out.println("making http request for access_token...");
-                                        System.out.println("response:");
+                                        //System.out.println("response:");
                                         getAccessToken();
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
@@ -153,9 +155,10 @@ public class Server {
                             String query = exchange.getRequestURI().getQuery();
                             String request;
                             if (query != null && query.contains("code")) {
+                                //System.out.println(query);
                                 ACCESS_CODE = query.substring(5);
                                 System.out.println("code received");
-                                System.out.println(ACCESS_CODE);
+                                //System.out.println(ACCESS_CODE);
                                 request = "Got the code. Return back to your program.";
                             } else {
                                 request = "Authorization code not found. Try again.";
@@ -183,7 +186,7 @@ public class Server {
     public void getAccessToken2() {
 
         System.out.println("making http request for access_token...");
-        System.out.println("response:");
+        //System.out.println("response:");
 
         HttpRequest request = HttpRequest.newBuilder()
                 .header("Content-Type", "application/x-www-form-urlencoded")
@@ -204,8 +207,12 @@ public class Server {
             assert response != null;
             if (response.statusCode()==200) {
                 musicAdvisor.setAccessGranted(true);
-                System.out.println(response.body());
-                System.out.println("---SUCCESS---");
+                JsonObject jsonObject = JsonParser.parseString(response.body()).getAsJsonObject();
+                ACCESS_TOKEN = jsonObject.get("access_token").getAsString();
+                musicAdvisor.setToken(ACCESS_TOKEN);
+                //System.out.println(response.body());
+                //System.out.println("---SUCCESS---");
+                System.out.println("Success!");
             } else {
                 System.out.println("error");
             }
