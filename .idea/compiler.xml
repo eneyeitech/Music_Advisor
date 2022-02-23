@@ -15,6 +15,14 @@
       <module name="Music_Advisor.Topics-Decorator-Pizza_Decorator.main" target="11" />
       <module name="Music_Advisor.Topics-Decorator-Theory.main" target="11" />
       <module name="Music_Advisor.Topics-Decorator-What_does_the_code_print.main" target="11" />
+      <module name="Music_Advisor.Topics-Encapsulating_object_creation-About_factories.main" target="11" />
+      <module name="Music_Advisor.Topics-Encapsulating_object_creation-Clock_factory.main" target="11" />
+      <module name="Music_Advisor.Topics-Encapsulating_object_creation-Factories.main" target="11" />
+      <module name="Music_Advisor.Topics-Encapsulating_object_creation-How_we_use_factories.main" target="11" />
+      <module name="Music_Advisor.Topics-Encapsulating_object_creation-Motor_static_factory.main" target="11" />
+      <module name="Music_Advisor.Topics-Encapsulating_object_creation-Select_statements.main" target="11" />
+      <module name="Music_Advisor.Topics-Encapsulating_object_creation-Static_factory_methods_for_Time.main" target="11" />
+      <module name="Music_Advisor.Topics-Encapsulating_object_creation-Theory.main" target="11" />
       <module name="Music_Advisor.util.main" target="11" />
     </bytecodeTargetLevel>
   </component>

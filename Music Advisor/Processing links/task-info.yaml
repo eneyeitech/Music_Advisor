@@ -1420,34 +1420,8 @@ files:
   visible: true
   learner_created: true
 feedback_link: https://hyperskill.org/learn/step/5480#comment
-status: Failed
+status: Solved
 feedback:
-  message: |-
-    Wrong answer in test #8
-
-    There are no playlists in correct format on &quot;playlists {name}&quot; action. Make sure you correctly parsed the category name.
-
-    Please find below the output of your program during this failed test.
-    Note that the &#39;&gt;&#39; character indicates the beginning of the input line.
-
-    ---
-
-    Arguments: -access http://127.0.0.1:45678 -resource http://127.0.0.1:56789
-
-    http://127.0.0.1:45678
-    http://127.0.0.1:56789
-    &gt; auth
-    use this link to request the access code:
-    http://127.0.0.1:45678/authorize?client_id=b68e796f69654238a1631d9a19c67898&amp;redirect_uri=http://localhost:8080&amp;response_type=code
-    waiting for code...
-    Tester: making requests to redirect uri: http://localhost:8080
-    Tester: done request 1: Authorization code not found. Try again.
-    Tester: done request 2: Authorization code not found. Try again.
-    code received
-    Tester: done request 3: Got the code. Return back to your program.
-    making http request for access_token...
-    Success!
-    &gt; playlists Party Time
-    Unknown category name.
-  time: Tue, 22 Feb 2022 17:13:36 UTC
-record: -1
+  message: Congratulations!
+  time: Tue, 22 Feb 2022 18:16:34 UTC
+record: 4

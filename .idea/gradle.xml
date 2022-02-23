@@ -24,6 +24,14 @@
             <option value="$PROJECT_DIR$/Topics/Decorator/Pizza Decorator" />
             <option value="$PROJECT_DIR$/Topics/Decorator/Theory" />
             <option value="$PROJECT_DIR$/Topics/Decorator/What does the code print" />
+            <option value="$PROJECT_DIR$/Topics/Encapsulating object creation/About factories" />
+            <option value="$PROJECT_DIR$/Topics/Encapsulating object creation/Clock factory" />
+            <option value="$PROJECT_DIR$/Topics/Encapsulating object creation/Factories" />
+            <option value="$PROJECT_DIR$/Topics/Encapsulating object creation/How we use factories" />
+            <option value="$PROJECT_DIR$/Topics/Encapsulating object creation/Motor static factory" />
+            <option value="$PROJECT_DIR$/Topics/Encapsulating object creation/Select statements" />
+            <option value="$PROJECT_DIR$/Topics/Encapsulating object creation/Static factory methods for Time" />
+            <option value="$PROJECT_DIR$/Topics/Encapsulating object creation/Theory" />
             <option value="$PROJECT_DIR$/util" />
           </set>
         </option>
